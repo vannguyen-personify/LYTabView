@@ -9,10 +9,13 @@
 import Foundation
 import Cocoa
 
+
+
 class LYTabItemView: NSButton {
     fileprivate let titleView = NSTextField(frame: .zero)
-    fileprivate var closeButton: LYHoverButton!
+    fileprivate var closeButton: LYHoverButton?
 
+    var canClose: Bool = true
     var tabBarView: LYTabBarView!
     var tabLabelObserver: NSKeyValueObservation?
     var tabViewItem: NSTabViewItem? {
@@ -35,9 +38,9 @@ class LYTabItemView: NSButton {
     var ypadding: CGFloat = 2
     var closeButtonSize = NSSize(width: 16, height: 16)
     var backgroundColor: ColorConfig = [
-        .active: NSColor(white: 0.77, alpha: 1),
-        .windowInactive: NSColor(white: 0.94, alpha: 1),
-        .inactive: NSColor(white: 0.70, alpha: 1)
+        .active: NSColor(deviceRed: 241/255.0, green: 243/255.0, blue: 245/255.0, alpha: 0.8),
+        .windowInactive: NSColor(deviceRed: 241/255.0, green: 243/255.0, blue: 245/255.0, alpha: 0.8),
+        .inactive: NSColor(deviceRed: 241/255.0, green: 243/255.0, blue: 245/255.0, alpha: 0.8)
     ]
 
     var hoverBackgroundColor: ColorConfig = [
@@ -46,13 +49,13 @@ class LYTabItemView: NSButton {
         .inactive: NSColor(white: 0.68, alpha: 1)
     ]
 
-    @objc dynamic private var realBackgroundColor = NSColor(white: 0.73, alpha: 1) {
+    @objc dynamic private var realBackgroundColor = NSColor(deviceRed: 241/255.0, green: 243/255.0, blue: 245/255.0, alpha: 0.8) {
         didSet {
             needsDisplay = true
         }
     }
-    var selectedBackgroundColor: ColorConfig = [
-        .active: NSColor(white: 0.86, alpha: 1),
+    static var selectedBackgroundColor: ColorConfig = [
+        .active: NSColor(white: 1.0, alpha: 1),
         .windowInactive: NSColor(white: 0.96, alpha: 1),
         .inactive: NSColor(white: 0.76, alpha: 1)
     ]
@@ -88,7 +91,7 @@ class LYTabItemView: NSButton {
     private var needAnimation: Bool {
         return self.tabBarView.needAnimation
     }
-
+ 
     override static func defaultAnimation(forKey key: NSAnimatablePropertyKey) -> Any? {
         if key.rawValue == "realBackgroundColor" {
             return CABasicAnimation()
@@ -106,6 +109,8 @@ class LYTabItemView: NSButton {
         self.isBordered = false
         let lowerPriority = NSLayoutConstraint.Priority(rawValue: NSLayoutConstraint.Priority.defaultLow.rawValue-10)
         self.setContentHuggingPriority(lowerPriority, for: .horizontal)
+        
+        titleView.wantsLayer = true
 
         titleView.translatesAutoresizingMaskIntoConstraints = false
         titleView.isEditable = false
@@ -113,7 +118,7 @@ class LYTabItemView: NSButton {
         titleView.isBordered = false
         titleView.drawsBackground = false
         self.addSubview(titleView)
-        let padding = xpadding*2+closeButtonSize.width
+        let padding = xpadding * 2 + closeButtonSize.width
         titleView.trailingAnchor
             .constraint(greaterThanOrEqualTo: self.trailingAnchor, constant: -padding).isActive = true
         titleView.leadingAnchor.constraint(greaterThanOrEqualTo: self.leadingAnchor, constant: padding).isActive = true
@@ -124,23 +129,25 @@ class LYTabItemView: NSButton {
         titleView.setContentHuggingPriority(lowerPriority, for: .horizontal)
         titleView.setContentCompressionResistancePriority(NSLayoutConstraint.Priority.defaultLow, for: .horizontal)
         titleView.lineBreakMode = .byTruncatingTail
-
-        closeButton = LYTabCloseButton(frame: .zero)
-        closeButton.translatesAutoresizingMaskIntoConstraints = false
-        closeButton.hoverBackgroundColor = closeButtonHoverBackgroundColor
-        closeButton.target = self
-        closeButton.action = #selector(closeTab)
-        closeButton.heightAnchor.constraint(equalToConstant: closeButtonSize.height).isActive = true
-        closeButton.widthAnchor.constraint(equalToConstant: closeButtonSize.width).isActive = true
-        closeButton.isHidden = true
-        self.addSubview(closeButton)
-        closeButton.trailingAnchor
-            .constraint(greaterThanOrEqualTo: self.titleView.leadingAnchor, constant: -xpadding).isActive = true
-        closeButton.topAnchor.constraint(greaterThanOrEqualTo: self.topAnchor, constant: ypadding).isActive = true
-        closeButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: xpadding).isActive = true
-        closeButton.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-        closeButton.bottomAnchor.constraint(lessThanOrEqualTo: self.bottomAnchor, constant: -ypadding).isActive = true
-
+        
+        if canClose, let ttitle = self.tabViewItem!.identifier as? String, ttitle != "home" {
+            closeButton = LYTabCloseButton(frame: .zero)
+            closeButton?.translatesAutoresizingMaskIntoConstraints = false
+            closeButton?.hoverBackgroundColor = closeButtonHoverBackgroundColor
+            closeButton?.target = self
+            closeButton?.action = #selector(closeTab)
+            closeButton?.heightAnchor.constraint(equalToConstant: closeButtonSize.height).isActive = true
+            closeButton?.widthAnchor.constraint(equalToConstant: closeButtonSize.width).isActive = true
+            closeButton?.isHidden = true
+            self.addSubview(closeButton!)
+            closeButton?.trailingAnchor
+                .constraint(greaterThanOrEqualTo: self.titleView.leadingAnchor, constant: -xpadding).isActive = true
+            closeButton?.topAnchor.constraint(greaterThanOrEqualTo: self.topAnchor, constant: ypadding).isActive = true
+            closeButton?.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: xpadding + 5).isActive = true
+            closeButton?.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+            closeButton?.bottomAnchor.constraint(lessThanOrEqualTo: self.bottomAnchor, constant: -ypadding).isActive = true
+        }
+        
         let menu = NSMenu()
         let addMenuItem = NSMenuItem(title: NSLocalizedString("New Tab", comment: "New Tab"),
                                      action: #selector(addNewTab), keyEquivalent: "")
@@ -176,9 +183,19 @@ class LYTabItemView: NSButton {
             self.title = item.label
         }
     }
+    
+    private func buildBarButton(image: NSImage?) -> NSView {
+        let imageView = NSImageView(frame: .zero)
+        imageView.image = image
+        return imageView
+    }
 
     override var intrinsicContentSize: NSSize {
         var size = titleView.intrinsicContentSize
+        if let ttitle = tabViewItem?.identifier as? String, ttitle == "home" {
+            size = closeButtonSize
+        }
+        
         size.height += ypadding * 2
         if let minHeight = self.tabBarView.minTabHeight, size.height < minHeight {
             size.height = minHeight
@@ -190,7 +207,22 @@ class LYTabItemView: NSButton {
     convenience init(tabViewItem: NSTabViewItem) {
         self.init(frame: .zero)
         self.tabViewItem = tabViewItem
+        setupViews()
         setupTitleAccordingToItem()
+        if let ttitle = tabViewItem.identifier as? String, ttitle == "home" {
+            let button = buildBarButton(image: NSImage(named: NSImage.Name(rawValue: "home")))
+            button.translatesAutoresizingMaskIntoConstraints = false
+//            button.isEnabled = false
+            let padding = xpadding*2+closeButtonSize.width/2.0
+            self.addSubview(button)
+            button.trailingAnchor
+                .constraint(greaterThanOrEqualTo: self.trailingAnchor, constant: -padding).isActive = true
+            button.leadingAnchor.constraint(greaterThanOrEqualTo: self.leadingAnchor, constant: padding).isActive = true
+            button.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            button.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+            button.topAnchor.constraint(greaterThanOrEqualTo: self.topAnchor, constant: ypadding).isActive = true
+            button.bottomAnchor.constraint(lessThanOrEqualTo: self.bottomAnchor, constant: -ypadding).isActive = true
+        }
     }
 
     required init?(coder: NSCoder) {
@@ -200,25 +232,181 @@ class LYTabItemView: NSButton {
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
-        setupViews()
+    }
+    
+    func drawCanvas2(fillColor: NSColor, frame: NSRect = NSRect(x: 0, y: 0, width: 82, height: 30)) {
+        //// Bezier Drawing
+        let bezierPath = NSBezierPath()
+        bezierPath.move(to: NSPoint(x: frame.minX + 4, y: frame.minY + 7.19))
+        /*
+         bezierPath.move(to: NSPoint(x: frame.minX + 4, y: frame.minY + 7.19))
+         
+             bezierPath.curve(to: NSPoint(x: frame.minX + 4.44, y: frame.minY + 3.11),
+         controlPoint1: NSPoint(x: frame.minX + 4, y: frame.minY + 5.02),
+         controlPoint2: NSPoint(x: frame.minX + 4, y: frame.minY + 3.94))
+         
+             bezierPath.curve(to: NSPoint(x: frame.minX + 6.18, y: frame.minY + 1.42),
+         controlPoint1: NSPoint(x: frame.minX + 4.82, y: frame.minY + 2.38),
+         controlPoint2: NSPoint(x: frame.minX + 5.43, y: frame.minY + 1.79))
+         
+             bezierPath.curve(to: NSPoint(x: frame.minX + 10.4, y: frame.minY + 1),
+         controlPoint1: NSPoint(x: frame.minX + 7.04, y: frame.minY + 1),
+         controlPoint2: NSPoint(x: frame.minX + 8.16, y: frame.minY + 1))
+
+         */
+        // top-left corner
+        bezierPath.curve(to: NSPoint(x: frame.minX + 4.44, y: frame.minY + 3.11),
+                         controlPoint1: NSPoint(x: frame.minX + 4, y: frame.minY + 5.02),
+                         controlPoint2: NSPoint(x: frame.minX + 4, y: frame.minY + 3.94))
+        bezierPath.curve(to: NSPoint(x: frame.minX + 6.18, y: frame.minY + 1.42),
+                         controlPoint1: NSPoint(x: frame.minX + 4.82, y: frame.minY + 2.38),
+                         controlPoint2: NSPoint(x: frame.minX + 5.43, y: frame.minY + 1.79))
+        bezierPath.curve(to: NSPoint(x: frame.minX + 10.4, y: frame.minY + 1),
+                         controlPoint1: NSPoint(x: frame.minX + 7.04, y: frame.minY + 1),
+                         controlPoint2: NSPoint(x: frame.minX + 8.16, y: frame.minY + 1))
+        
+        //bezierPath.line(to: NSPoint(x: frame.minX + 71.6, y: frame.minY + 1))
+        bezierPath.line(to: NSPoint(x: frame.width - (82 - 71.6), y: frame.minY + 1)) //top line
+        
+        // top-right corner
+        
+        /*
+         bezierPath.curve(to: NSPoint(x: frame.minX + 75.82, y: frame.minY + 1.42),
+         controlPoint1: NSPoint(x: frame.minX + 73.84, y: frame.minY + 1),
+         controlPoint2: NSPoint(x: frame.minX + 74.96, y: frame.minY + 1))
+         
+             bezierPath.curve(to: NSPoint(x: frame.minX + 77.56, y: frame.minY + 3.11),
+         controlPoint1: NSPoint(x: frame.minX + 76.57, y: frame.minY + 1.79),
+         controlPoint2: NSPoint(x: frame.minX + 77.18, y: frame.minY + 2.38))
+         
+             bezierPath.curve(to: NSPoint(x: frame.minX + 78, y: frame.minY + 7.19),
+         controlPoint1: NSPoint(x: frame.minX + 78, y: frame.minY + 3.94),
+         controlPoint2: NSPoint(x: frame.minX + 78, y: frame.minY + 5.02))
+           
+         */
+        
+        bezierPath.curve(to: NSPoint(x: frame.width - (82 - 75.82), y: frame.minY + 1.42),
+                         controlPoint1: NSPoint(x: frame.width - (82 - 73.84), y: frame.minY + 1),
+                         controlPoint2: NSPoint(x: frame.width - (82 - 74.96), y: frame.minY + 1))
+        bezierPath.curve(to: NSPoint(x: frame.width - (82 - 77.56), y: frame.minY + 3.11),
+                         controlPoint1: NSPoint(x: frame.width - (82 - 76.57), y: frame.minY + 1.79),
+                         controlPoint2: NSPoint(x: frame.width - (82 - 77.18), y: frame.minY + 2.38))
+        bezierPath.curve(to: NSPoint(x: frame.width - (82 - 78), y: frame.minY + 7.19),
+                         controlPoint1: NSPoint(x: frame.width - (82 - 78), y: frame.minY + 3.94),
+                         controlPoint2: NSPoint(x: frame.width - (82 - 78), y: frame.minY + 5.02))
+        
+        //     bezierPath.line(to: NSPoint(x: frame.minX + 78, y: frame.minY + 23.74))
+        bezierPath.line(to: NSPoint(x: frame.width - (82 - 78), y: frame.height - (30 - 23.74))) //right line
+        
+        
+        /*
+         bezierPath.curve(to: NSPoint(x: frame.minX + 78.04, y: frame.minY + 25.14),
+         controlPoint1: NSPoint(x: frame.minX + 78, y: frame.minY + 24.46),
+         controlPoint2: NSPoint(x: frame.minX + 78, y: frame.minY + 24.81))
+         
+             bezierPath.curve(to: NSPoint(x: frame.minX + 80.72, y: frame.minY + 29.34),
+         controlPoint1: NSPoint(x: frame.minX + 78.24, y: frame.minY + 26.86),
+         controlPoint2: NSPoint(x: frame.minX + 79.23, y: frame.minY + 28.4))
+         
+             bezierPath.curve(to: NSPoint(x: frame.minX + 82, y: frame.minY + 30),
+         controlPoint1: NSPoint(x: frame.minX + 81.01, y: frame.minY + 29.52),
+         controlPoint2: NSPoint(x: frame.minX + 81.34, y: frame.minY + 29.68))
+
+         */
+        // botom-right corner
+        bezierPath.curve(to: NSPoint(x: frame.width - (82 - 78.04), y: frame.height - (30 - 25.14)),
+                         controlPoint1: NSPoint(x: frame.width - (82 -  78), y: frame.height - (30 - 24.46)),
+                         controlPoint2: NSPoint(x: frame.width - (82 -  78), y: frame.height - (30 - 24.81)))
+        bezierPath.curve(to: NSPoint(x: frame.width - (82 - 80.72), y: frame.height - (30 - 29.34)),
+                         controlPoint1: NSPoint(x: frame.width - (82 - 78.24), y: frame.height - (30 - 26.86)),
+                         controlPoint2: NSPoint(x: frame.width - (82 - 79.23), y: frame.height - (30 - 28.4)))
+        bezierPath.curve(to: NSPoint(x: frame.width, y: frame.minY + frame.height),
+                         controlPoint1: NSPoint(x: frame.width - (82 - 81.01), y: frame.height - (30 - 29.52)),
+                         controlPoint2: NSPoint(x: frame.width - (82 -  81.34), y: frame.height - (30 - 29.68)))
+        
+        bezierPath.line(to: NSPoint(x: frame.minX, y: frame.minY + frame.height)) // bottom line
+        
+        /*
+         bezierPath.curve(to: NSPoint(x: frame.minX + 1.28, y: frame.minY + 29.34),
+         controlPoint1: NSPoint(x: frame.minX + 0.66, y: frame.minY + 29.68),
+         controlPoint2: NSPoint(x: frame.minX + 0.99, y: frame.minY + 29.52))
+         
+            bezierPath.curve(to: NSPoint(x: frame.minX + 3.96, y: frame.minY + 25.14),
+         controlPoint1: NSPoint(x: frame.minX + 2.77, y: frame.minY + 28.4),
+         controlPoint2: NSPoint(x: frame.minX + 3.76, y: frame.minY + 26.86))
+         
+            bezierPath.curve(to: NSPoint(x: frame.minX + 4, y: frame.minY + 23.74),
+         controlPoint1: NSPoint(x: frame.minX + 4, y: frame.minY + 24.81),
+         controlPoint2: NSPoint(x: frame.minX + 4, y: frame.minY + 24.46))
+         
+            bezierPath.line(to: NSPoint(x: frame.minX + 4, y: frame.minY + 7.19))
+         */
+        // bottom left corner
+        bezierPath.curve(to: NSPoint(x: frame.minX + 1.28, y: frame.height - (30 - 29.34)),
+                         controlPoint1: NSPoint(x: frame.minX + 0.66, y: frame.height - (30 - 29.68)),
+                         controlPoint2: NSPoint(x: frame.minX + 0.99, y: frame.height - (30 -  29.52)))
+        bezierPath.curve(to: NSPoint(x: frame.minX + 3.96, y: frame.height - (30 -  25.14)),
+                         controlPoint1: NSPoint(x: frame.minX + 2.77, y: frame.height - (30 - 28.4)),
+                         controlPoint2: NSPoint(x: frame.minX + 3.76, y: frame.height - (30 - 26.86)))
+        bezierPath.curve(to: NSPoint(x: frame.minX + 4, y: frame.height - (30 -  23.74)),
+                         controlPoint1: NSPoint(x: frame.minX + 4, y: frame.height - (30 -  24.81)),
+                         controlPoint2: NSPoint(x: frame.minX + 4, y: frame.height - (30 -  24.46)))
+        bezierPath.line(to: NSPoint(x: frame.minX + 4, y: frame.minY + 7.19)) //left line
+        
+        bezierPath.close()
+        fillColor.setFill()
+        bezierPath.fill()
     }
 
+    func drawCanvas1(fillColor: NSColor, frame: NSRect = NSRect(x: 0, y: 0, width: 82, height: 30)) {
+
+        //// Bezier Drawing
+        let bezierPath = NSBezierPath()
+        bezierPath.move(to: NSPoint(x: 0, y: frame.height))
+        bezierPath.curve(to: NSPoint(x: 2, y: frame.height - 2.18),
+                         controlPoint1: NSPoint(x: 2, y: frame.height - 3.18),
+                         controlPoint2: NSPoint(x: 2, y: frame.height - 4))
+        bezierPath.curve(to: NSPoint(x: 3, y: frame.height - 2.18),
+                         controlPoint1: NSPoint(x: 3, y: frame.height - 4.18),
+                         controlPoint2: NSPoint(x: 3, y: frame.height - 5))
+        bezierPath.curve(to: NSPoint(x: 5, y: frame.height - 5.18),
+                         controlPoint1: NSPoint(x: 5, y: frame.height - 6),
+                         controlPoint2: NSPoint(x: 5, y: frame.height - 6.18))
+        bezierPath.line(to: NSPoint(x: 5, y: 5)) // left line
+        bezierPath.curve(to: NSPoint(x: 6, y: 4), controlPoint1: NSPoint(x: 7, y: 3.6), controlPoint2: NSPoint(x: 8, y: 3))
+        bezierPath.line(to: NSPoint(x: frame.width - 6, y: 3)) // top line
+        bezierPath.curve(to: NSPoint(x: frame.width - 5, y: 4), controlPoint1: NSPoint(x: frame.width - 6, y: 4.5), controlPoint2: NSPoint(x: frame.width - 5.5, y: 5))
+        
+        bezierPath.line(to: NSPoint(x: frame.width - 5, y: 0)) // right line
+        bezierPath.curve(to: NSPoint(x: frame.width - 4, y: frame.height - 2.18), controlPoint1: NSPoint(x:  frame.width - 4, y: frame.height - 3.18), controlPoint2: NSPoint(x: frame.width - 4, y: frame.height - 4))
+        bezierPath.curve(to: NSPoint(x: frame.width, y: frame.height), controlPoint1: NSPoint(x: frame.width - 1, y: frame.height - 3), controlPoint2: NSPoint(x: frame.width - 2, y: frame.height - 2))
+        bezierPath.line(to: NSPoint(x: 0, y: frame.height))
+        bezierPath.close() // bottom line
+        fillColor.setFill()
+        bezierPath.fill()
+    }
+    
     override func draw(_ dirtyRect: NSRect) {
         let status = self.tabBarView.status
         if shouldDrawInHighLight {
-            selectedBackgroundColor[status]!.setFill()
+            
+//            NSColor.green.setFill()
+//            self.bounds.fill()
             titleView.textColor = selectedTextColor[status]!
+            self.drawCanvas2(fillColor: LYTabItemView.selectedBackgroundColor[.active]!, frame: self.bounds)
+            
+            if self.drawBorder {
+                let boderFrame = self.bounds.insetBy(dx: 1, dy: -1)
+                self.tabBarView.borderColor[status]!.setStroke()
+                let path = NSBezierPath(rect: boderFrame)
+                path.stroke()
+            }
+            
         } else {
             self.realBackgroundColor.setFill()
             titleView.textColor = unselectedForegroundColor
         }
-        self.bounds.fill()
-        if self.drawBorder {
-            let boderFrame = self.bounds.insetBy(dx: 1, dy: -1)
-            self.tabBarView.borderColor[status]!.setStroke()
-            let path = NSBezierPath(rect: boderFrame)
-            path.stroke()
-        }
+
     }
 
     override func mouseDown(with theEvent: NSEvent) {
@@ -248,7 +436,7 @@ class LYTabItemView: NSButton {
         if !shouldDrawInHighLight {
             self.animatorOrNot(needAnimation).realBackgroundColor = hoverBackgroundColor[status]!
         }
-        closeButton.animatorOrNot(needAnimation).isHidden = false
+        closeButton?.animatorOrNot(needAnimation).isHidden = false
     }
 
     override func mouseExited(with theEvent: NSEvent) {
@@ -260,7 +448,7 @@ class LYTabItemView: NSButton {
         if !shouldDrawInHighLight {
             self.animatorOrNot(needAnimation).realBackgroundColor = backgroundColor[status]!
         }
-        closeButton.animatorOrNot(needAnimation).isHidden = true
+        closeButton?.animatorOrNot(needAnimation).isHidden = true
     }
 
     override func mouseDragged(with theEvent: NSEvent) {
@@ -316,6 +504,7 @@ extension LYTabItemView: NSPasteboardItemDataProvider {
 
 extension LYTabItemView: NSDraggingSource {
     func setupDragAndDrop(_ theEvent: NSEvent) {
+        return
         let pasteItem = NSPasteboardItem()
         let dragItem = NSDraggingItem(pasteboardWriter: pasteItem)
         var draggingRect = self.frame
@@ -341,7 +530,7 @@ extension LYTabItemView: NSDraggingSource {
 
     func draggingSession(_ session: NSDraggingSession, willBeginAt screenPoint: NSPoint) {
         dragOffset = self.frame.origin.x - screenPoint.x
-        closeButton.isHidden = true
+        closeButton?.isHidden = true
         let dragRect = self.bounds
         let image = NSImage(data: self.dataWithPDF(inside: dragRect))
         self.draggingView = NSImageView(frame: dragRect)
@@ -382,7 +571,11 @@ extension LYTabItemView: NSDraggingSource {
     func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
         dragOffset = nil
         isDragging = false
-        closeButton.isHidden = false
+        
+        if canClose {
+            closeButton?.isHidden = false
+        }
+        
         self.titleView.isHidden = false
         self.draggingView?.removeFromSuperview()
         self.draggingViewLeadingConstraint = nil

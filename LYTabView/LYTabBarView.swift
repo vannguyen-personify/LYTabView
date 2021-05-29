@@ -64,7 +64,7 @@ public class LYTabBarView: NSView {
             }
         }
     }
-    public var hideIfOnlyOneTabExists: Bool = true {
+    public var hideIfOnlyOneTabExists: Bool = false {
         didSet {
             checkVisibilityAccordingToTabCount()
         }
@@ -119,8 +119,8 @@ public class LYTabBarView: NSView {
     ]
 
     public var borderColor: ColorConfig = [
-        .active: NSColor(white: 0.72, alpha: 1),
-        .windowInactive: NSColor(white: 0.86, alpha: 1),
+        .active: NSColor.clear, // NSColor(white: 0.72, alpha: 1),
+        .windowInactive: NSColor.clear,
         .inactive: NSColor(white: 0.71, alpha: 1)
     ]
 
@@ -242,7 +242,7 @@ public class LYTabBarView: NSView {
         addTabButton = buildBarButton(image: NSImage(named: NSImage.Name.addTemplate),
                                       action: #selector(addNewTab))
 
-        outterStackView.addView(packedTabButton, in: .bottom)
+//        outterStackView.addView(packedTabButton, in: .bottom)
         outterStackView.addView(addTabButton, in: .bottom)
         packedTabButton.isHidden = true
         addTabButton.isHidden = !showAddNewTabButton
@@ -602,6 +602,8 @@ public class LYTabBarView: NSView {
         }
         self.insertToPackedItems(self.lastUnpackedItem, index: 0)
         self.tabContainerView.removeView(lastTabView)
+        
+        
         updateTabState()
     }
 
@@ -624,6 +626,7 @@ public class LYTabBarView: NSView {
         self.packedTabViewItems.insert(item, at: index)
     }
 
+    var placeHolderView: NSView?
     private func insertTabItem(_ item: NSTabViewItem, index: NSInteger, animated: Bool = false) {
         let needPack = needPackItem(addtion: 1)
         if needPack || (hasPackedTabViewItems && index > self.tabItemViews().count) {
@@ -640,6 +643,27 @@ public class LYTabBarView: NSView {
                                     inGravity: .center,
                                     animated: animated,
                                     completionHandler: nil)
+        
+        if let _ = placeHolderView {
+//            let constraint = tabView.widthAnchor.constraint(equalToConstant: 152)
+//            constraint.priority = .init(999)
+//            constraint.isActive = true
+            
+        } else {
+            
+            placeHolderView = NSView(frame: .zero)
+            placeHolderView?.setContentHuggingPriority(.defaultLow, for: .horizontal)
+//            placeHolderView?.wantsLayer = true
+//            placeHolderView?.layer?.backgroundColor = NSColor.blue.cgColor
+   
+            let constraint = tabView.widthAnchor.constraint(equalToConstant: 42)
+            constraint.priority = .init(999)
+            constraint.isActive = true
+            tabView.setContentHuggingPriority(.defaultHigh + 10, for: .horizontal)
+            
+            tabContainerView.insertView(placeHolderView!, at: index+1, in: .center)
+        }
+        
         if tabItemViews().count == 1 {
             resetHeight()
         }

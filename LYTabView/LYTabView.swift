@@ -42,7 +42,7 @@ public class LYTabView: NSView {
 
         stackView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(stackView)
-        stackView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        stackView.topAnchor.constraint(equalTo: self.topAnchor, constant: 2).isActive = true
         stackView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
         stackView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
         stackView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
