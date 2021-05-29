@@ -128,6 +128,7 @@ Pod::Spec.new do |spec|
   # spec.library   = "iconv"
   # spec.libraries = "iconv", "xml2"
   spec.framework    = 'QuartzCore', 'AppKit'
+  spec.swift_version = '4'
 
 
   # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
