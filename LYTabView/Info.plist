@@ -24,5 +24,9 @@
 	<string>Copyright © 2016 Lu Yibin. All rights reserved.</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>NunitoSans-Regular.ttf</string>
+	</array>
 </dict>
 </plist>

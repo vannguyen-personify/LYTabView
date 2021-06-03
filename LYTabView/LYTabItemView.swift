@@ -61,7 +61,7 @@ class LYTabItemView: NSButton {
     ]
 
     var selectedTextColor: ColorConfig = [
-        .active: NSColor.textColor,
+        .active: NSColor(red: 0.204, green: 0.604, blue: 1, alpha: 1),
         .windowInactive: NSColor(white: 0.4, alpha: 1),
         .inactive: NSColor(white: 0.4, alpha: 1)
     ]
@@ -110,8 +110,8 @@ class LYTabItemView: NSButton {
         let lowerPriority = NSLayoutConstraint.Priority(rawValue: NSLayoutConstraint.Priority.defaultLow.rawValue-10)
         self.setContentHuggingPriority(lowerPriority, for: .horizontal)
         
+        titleView.font = NSFont(name: "NunitoSans-Regular", size: 12.0)
         titleView.wantsLayer = true
-
         titleView.translatesAutoresizingMaskIntoConstraints = false
         titleView.isEditable = false
         titleView.alignment = .center

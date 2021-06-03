@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		ABCCDC8726691B0100538063 /* NunitoSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ABCCDC8626691AFB00538063 /* NunitoSans-Regular.ttf */; };
+		ABCCDC8A26691B0200538063 /* NunitoSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ABCCDC8626691AFB00538063 /* NunitoSans-Regular.ttf */; };
 		AE2562A11CAA612C00644D9F /* LYTabView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE2562961CAA612C00644D9F /* LYTabView.framework */; };
 		AE2562A61CAA612C00644D9F /* LYTabBarViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE2562A51CAA612C00644D9F /* LYTabBarViewTests.swift */; };
 		AE2562B71CAA614C00644D9F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE2562B61CAA614C00644D9F /* AppDelegate.swift */; };
@@ -59,6 +61,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		ABCCDC8626691AFB00538063 /* NunitoSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NunitoSans-Regular.ttf"; sourceTree = "<group>"; };
 		AE2562961CAA612C00644D9F /* LYTabView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LYTabView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE2562A01CAA612C00644D9F /* LYTabViewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LYTabViewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE2562A51CAA612C00644D9F /* LYTabBarViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LYTabBarViewTests.swift; sourceTree = "<group>"; };
@@ -142,6 +145,7 @@
 				AEB984A01CAE7EA40030F752 /* LYTabItemView.swift */,
 				AEB984A11CAE7EA40030F752 /* LYHoverButton.swift */,
 				AE269DE21CB6266000DD4F45 /* LYTabCloseButton.swift */,
+				ABCCDC8626691AFB00538063 /* NunitoSans-Regular.ttf */,
 			);
 			path = LYTabView;
 			sourceTree = "<group>";
@@ -276,6 +280,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -296,6 +301,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ABCCDC8726691B0100538063 /* NunitoSans-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -311,6 +317,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AE2562BB1CAA614C00644D9F /* Assets.xcassets in Resources */,
+				ABCCDC8A26691B0200538063 /* NunitoSans-Regular.ttf in Resources */,
 				AE2562BE1CAA614C00644D9F /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
