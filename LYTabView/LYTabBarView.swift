@@ -177,7 +177,7 @@ public class LYTabBarView: NSView {
         if let tabItemView = self.tabItemViews().first {
             return tabItemView.frame.size.height
         }
-        return 32
+        return 30
     }
     private let outterStackView = NSStackView(frame: .zero)
     private var addTabButton: NSButton!
