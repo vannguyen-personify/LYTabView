@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "LYTabBarView"
-  spec.version      = "1.0.10"
+  spec.version      = "1.1.0"
   spec.summary      = "LYTabView is a customized Tab View with modernized tab bar style for Mac OS X."
 
   # This description is used to generate tags and improve search results.
@@ -128,7 +128,7 @@ Pod::Spec.new do |spec|
   # spec.library   = "iconv"
   # spec.libraries = "iconv", "xml2"
   spec.framework    = 'QuartzCore', 'AppKit'
-  spec.swift_version = '4'
+  spec.swift_version = '5'
 
 
   # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #

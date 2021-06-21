@@ -93,7 +93,7 @@ class LYTabItemView: NSButton {
     }
  
     override static func defaultAnimation(forKey key: NSAnimatablePropertyKey) -> Any? {
-        if key.rawValue == "realBackgroundColor" {
+        if key == "realBackgroundColor" {
             return CABasicAnimation()
         }
         return super.defaultAnimation(forKey: key) as AnyObject?
@@ -210,7 +210,7 @@ class LYTabItemView: NSButton {
         setupViews()
         setupTitleAccordingToItem()
         if let ttitle = tabViewItem.identifier as? String, ttitle == "home" {
-            let button = buildBarButton(image: NSImage(named: NSImage.Name(rawValue: "home")))
+            let button = buildBarButton(image: NSImage(named: .init("home")))
             button.translatesAutoresizingMaskIntoConstraints = false
 //            button.isEnabled = false
             let padding = xpadding*2+closeButtonSize.width/2.0
@@ -586,14 +586,15 @@ extension LYTabItemView: NSDraggingSource {
     }
 }
 
-extension LYTabItemView: NSMenuDelegate {
-    override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+extension LYTabItemView: NSMenuDelegate, NSMenuItemValidation {
+    
+    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         if menuItem.action == #selector(addNewTab) {
             return (self.tabBarView.addNewTabButtonTarget != nil) && (self.tabBarView.addNewTabButtonAction != nil)
         }
         if menuItem.action == #selector(closeToRight) {
             if let tabItem = self.tabViewItem,
-                let tabView = self.tabViewItem?.tabView {
+               let tabView = self.tabViewItem?.tabView {
                 return tabItem != tabView.tabViewItems.last
             }
             return false

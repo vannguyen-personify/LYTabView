@@ -254,9 +254,9 @@ public class LYTabBarView: NSView {
         tabContainerView.setHuggingPriority(NSLayoutConstraint.Priority.defaultLow, for: .horizontal)
         tabContainerView.setHuggingPriority(NSLayoutConstraint.Priority.defaultLow, for: .vertical)
 
-        packedTabButton = buildBarButton(image: NSImage(named: NSImage.Name.rightFacingTriangleTemplate),
+        packedTabButton = buildBarButton(image: NSImage(named: NSImage.rightFacingTriangleTemplateName),
                                          action: #selector(showPackedList))
-        addTabButton = buildAddBarButton(image: NSImage(named: NSImage.Name.addTemplate),
+        addTabButton = buildAddBarButton(image: NSImage(named: NSImage.addTemplateName),
                                       action: #selector(addNewTab))
         
         rightMenuStackView.translatesAutoresizingMaskIntoConstraints = false
