@@ -17,12 +17,17 @@ public enum BarStatus {
 
 public typealias ColorConfig = [BarStatus: NSColor]
 
+@objc
+public protocol LYTabBarViewDelegate: NSTabViewDelegate {
+    func tabView(_ tabView: LYTabBarView, shouldClose tabViewItem: NSTabViewItem) -> Bool
+}
+
 @IBDesignable
 public class LYTabBarView: NSView {
     private let serialQueue = DispatchQueue(label: "Operations.TabBarView.UpdaterQueue")
     private var _needsUpdate = false
 
-    @IBOutlet public weak var delegate: NSTabViewDelegate?
+    @IBOutlet public weak var delegate: LYTabBarViewDelegate?
 
     public enum BoderStyle {
         case none
@@ -345,6 +350,10 @@ public class LYTabBarView: NSView {
     }
 
     public func removeTabViewItem(_ tabviewItem: NSTabViewItem, animated: Bool = false) {
+        if delegate?.tabView(self, shouldClose: tabviewItem) == false {
+            return
+        }
+        
         if let index = self.packedTabViewItems.index(of: tabviewItem) {
             removePackedTabItem(at: index)
         }

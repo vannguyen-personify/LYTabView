@@ -22,7 +22,7 @@ public class LYTabView: NSView {
     private let stackView: NSStackView = NSStackView(frame: .zero)
 
     /// delegate of LYTabView
-    public var delegate: NSTabViewDelegate? {
+    public var delegate: LYTabBarViewDelegate? {
         get {
             return tabBarView.delegate
         }
