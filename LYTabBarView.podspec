@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "LYTabBarView"
-  spec.version      = "1.1.0"
+  spec.version      = "1.1.1"
   spec.summary      = "LYTabView is a customized Tab View with modernized tab bar style for Mac OS X."
 
   # This description is used to generate tags and improve search results.
